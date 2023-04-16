@@ -1,29 +1,32 @@
-import { useEffect } from "react";
+import {useEffect} from 'react'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Register from "./pages/register";
-import PageRender from "./customRouter/pageRender";
+import PageRender from './customRouter/PageRender'
 import PrivateRouter from './customRouter/privateRouter';
-import Home from "./pages/home";
-import Login from "./pages/login";
+import Home from './pages/home'
+import Login from './pages/login'
 import Register from './pages/register'
 
-import { refreshToken } from "./redux/actions/authActions";
-import Alert from "./components/alert/Alert";
-import { useSelector, useDispatch } from "react-redux";
-import {} from "./redux/actions/authActions";
-import StatusModal from './components/StatusModal'
+import { refreshToken } from './redux/actions/authActions';
+import { useSelector, useDispatch } from 'react-redux'
+import { getPosts } from './redux/actions/postAction'
 
 import Alert from './components/alert/Alert'
 import Header from './components/header/header'
+import StatusModal from './components/StatusModal'
 
 function App() {
   const { auth, status } = useSelector((state) => state);
   console.log("auth token in Login Component:", auth.token);
   const dispatch = useDispatch();
   console.log("AUTH TOKEN:" + auth.token);
+
   useEffect(() => {
-    dispatch(refreshToken());
-  }, [dispatch]);
+    dispatch(refreshToken())
+  },[dispatch])
+
+  useEffect(() => {
+    if(auth.token) dispatch(getPosts(auth.token))
+  },[dispatch, auth.token])
 
   return (
     <>
@@ -31,7 +34,7 @@ function App() {
       <div className="App">
         <div className="main">
           <Router>
-            <Alert />
+            <Alert/>
             {auth.token && <Header/>}
             {status && <StatusModal/>}
             <Routes>
@@ -44,7 +47,12 @@ function App() {
           </Router>
         </div>
       </div>
-    </>
+      </>
   );
 }
+
 export default App;
+
+//<PrivateRouter exact path='/:page/:id' element={<PageRender />} />
+//<Route exact path='/:page/:id' element={<PrivateRouter {...props}><PageRender /> </PrivateRouter>} />
+              

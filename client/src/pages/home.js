@@ -10,7 +10,7 @@ import Posts from './../components/home/Posts'
 const Home = () => {
 
     const {homePosts} = useSelector(state => state)
-    console.log(homePosts)
+    
     return (
         <div className="home row mx-0">
                 <div className='col-md-8'>

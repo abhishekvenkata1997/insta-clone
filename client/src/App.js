@@ -7,19 +7,20 @@ import Login from './pages/login'
 import Register from './pages/register'
 
 import { refreshToken } from './redux/actions/authActions';
-import { useSelector, useDispatch } from 'react-redux'
+import {useSelector, useDispatch} from 'react-redux'
 import { getPosts } from './redux/actions/postAction'
 
 import Alert from './components/alert/Alert'
 import Header from './components/header/header'
 import StatusModal from './components/StatusModal'
-
 function App() {
-  const { auth, status } = useSelector((state) => state);
-  console.log("auth token in Login Component:", auth.token);
-  const dispatch = useDispatch();
-  console.log("AUTH TOKEN:" + auth.token);
 
+  const { auth, status, modal } = useSelector(state => state)
+  console.log("auth token in Login Component:", auth.token)
+  const dispatch = useDispatch()
+ console.log("AUTH TOKEN:"+auth.token)
+
+ 
   useEffect(() => {
     dispatch(refreshToken())
   },[dispatch])
@@ -28,10 +29,11 @@ function App() {
     if(auth.token) dispatch(getPosts(auth.token))
   },[dispatch, auth.token])
 
+
   return (
     <>
       <input type="checkbox" id="theme" />
-      <div className="App">
+      <div className={`App ${(status || modal) && 'mode'}`}>
         <div className="main">
           <Router>
             <Alert/>
@@ -47,6 +49,7 @@ function App() {
           </Router>
         </div>
       </div>
+
       </>
   );
 }

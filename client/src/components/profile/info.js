@@ -1,19 +1,15 @@
 import React, {useState, useEffect} from "react";
-import { useParams, Link } from 'react-router-dom'
-import {useSelector, useDispatch} from 'react-redux'
 import Avatar from './../Avatar'
 import EditProfile from './EditProfile'
 import FollowBtn from "../FollowBtn";
 import Followers from "./Followers"
 import Following from "./Following"
+import { GLOBALTYPES } from "../../redux/actions/globalTypes";
 
-import { getProfileUsers } from './../../redux/actions/profileAction'
-const Info = () => {
+const Info = ({id, auth, profile, dispatch}) => {
 
-    console.log("Inside Info")
-    const { id } = useParams()
-    const { auth, profile } = useSelector(state => state)
-    const dispatch = useDispatch()
+
+    
 
     const [userData, setUserData] = useState([])
     const [onEdit, setOnEdit] = useState(false)
@@ -27,11 +23,14 @@ const Info = () => {
             setUserData([auth.user])
         }else
         {
-            dispatch(getProfileUsers({users: profile.users, id, auth}))
-            const user = profile.users.find(user => user._id === id);
-            const newData = {...user,}
-            const newArray = [newData]
-            setUserData(newArray)
+            //const user = profile.users.find(user => user._id === id);
+            //const newData = {...user,}
+            //const newArray = [newData]
+            //setUserData(newArray)
+
+            let newData = profile.users.filter(user => user._id === id)
+            newData = newData.length > 0 ? [newData.shift()] : [];
+            setUserData(newData)
         }           
     },[id, auth, dispatch, profile.users])
 

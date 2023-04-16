@@ -66,5 +66,11 @@
    @import url('./header.css');
 
 
-   /*-------PROFILE ------------------*/
-   @import url('./profile.css');
+    /*-------PROFILE ------------------*/
+    @import url('./profile.css');
+
+    /*-------HOME------------------*/
+    @import url('./home.css');
+
+    /*-------STATUS MODAL ----------*/
+    @import url('./status_modal.css');

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import Send from './../../../images/send.svg'
-
 import ShareModal from '../../ShareModal'
 import { BASE_URL } from '../../../utils/config'
 
@@ -10,9 +9,6 @@ const CardFooter = ({post}) => {
     const [isLike, setIsLike] = useState(false)
     const [loadLike, setLoadLike] = useState(false)
 
-    const [isShare, setIsShare] = useState(false)
-
-    const { auth, theme } = useSelector(state => state)
     const [isShare, setIsShare] = useState(false)
     const { auth,theme } = useSelector(state => state)
     const dispatch = useDispatch()
@@ -32,7 +28,6 @@ const CardFooter = ({post}) => {
                         <i className="far fa-comment" />
                     </Link>
 
-                    <img src={Send} alt="Send" />
                     <img src={Send} alt="Send" onClick={() => setIsShare(!isShare)}/>
 
                 </div>

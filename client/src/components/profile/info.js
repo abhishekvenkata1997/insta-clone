@@ -14,10 +14,13 @@ const Info = () => {
     const { id } = useParams()
     const { auth, profile } = useSelector(state => state)
     const dispatch = useDispatch()
+
     const [userData, setUserData] = useState([])
     const [onEdit, setOnEdit] = useState(false)
+
     const [showFollowers, setShowFollowers] = useState(false)
     const [showFollowing, setShowFollowing] = useState(false)
+
     useEffect(() => {
         if(id === auth.user._id)
         {
@@ -25,31 +28,33 @@ const Info = () => {
         }else
         {
             dispatch(getProfileUsers({users: profile.users, id, auth}))
-            const newData = profile.users.filter(user => user._id === id)
-            console.log("NEW DATA:"+newData)
-            setUserData(newData)
-        }
+            const user = profile.users.find(user => user._id === id);
+            const newData = {...user,}
+            const newArray = [newData]
+            setUserData(newArray)
+        }           
     },[id, auth, dispatch, profile.users])
+
     return (
         <div className="info">
             {
                 userData.map(user => (
                     <div className="info_container" key={user._id}>
-                        <Avatar src={user.avatar} size="supper-avatar" />
-
+                    <Avatar src={user.avatar} size="supper-avatar" />
+    
                         <div className="info_content">
                             <div className="info_content_title">
                                 <h2>{user.username}</h2>
                                 {
                                     user._id === auth.user._id ?
-                                        <button className="btn btn-outline-info"
-                                                onClick={() => setOnEdit(true)}>
-                                            Edit Profile
-                                        </button> : <FollowBtn user={user}/>
+                                    <button className="btn btn-outline-info"
+                                    onClick={() => setOnEdit(true)}>
+                                        Edit Profile
+                                    </button> : <FollowBtn user={user}/>
                                 }
-
+                                
                             </div>
-
+    
                             <div className="follow_btn">
                                 <span className="mr-4" onClick={() => setShowFollowers(true)}>
                                     {user.followers.length} Followers
@@ -58,7 +63,7 @@ const Info = () => {
                                     {user.following.length} Following
                                 </span>
                             </div>
-
+    
                             <h6>{user.fullname} <span className="text-danger">{user.mobile}</span></h6>
                             <p className="m-0">{user.address}</p>
                             <h6 className="m-0">{user.email}</h6>
@@ -67,29 +72,32 @@ const Info = () => {
                             </a>
                             <p>{user.story}</p>
                         </div>
+
                         {
-                            onEdit && <EditProfile
-                                user={user}
-                                setOnEdit={setOnEdit} />
+                            onEdit && <EditProfile 
+                                        user={user} 
+                                        setOnEdit={setOnEdit} />
                         }
 
                         {
                             showFollowers &&
-                            <Followers
-                                users={user.followers}
-                                setShowFollowers={setShowFollowers}/>
+                            <Followers 
+                            users={user.followers} 
+                            setShowFollowers={setShowFollowers}/>
                         }
 
                         {
                             showFollowing &&
-                            <Following
-                                users={user.following}
-                                setShowFollowing={setShowFollowing}/>
+                            <Following 
+                            users={user.following} 
+                            setShowFollowing={setShowFollowing}/>
                         }
-                    </div>
+                </div>
                 ))
             }
         </div>
-    )
+
+                )
 }
+
 export default Info;

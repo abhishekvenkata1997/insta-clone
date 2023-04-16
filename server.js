@@ -14,7 +14,7 @@ app.use(cookieParser())
 app.use('/api',require('./routes/authRoutes'))
 app.use('/api',require('./routes/userRouter'))
 app.use('/api',require('./routes/postRoutes'))
-
+app.use('/api',require('./routes/commentRoutes'))
 const URI = process.env.MONGODB_URL
 mongoose.connect(URI, {
     useNewUrlParser: true,

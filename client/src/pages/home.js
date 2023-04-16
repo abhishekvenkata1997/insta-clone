@@ -26,6 +26,7 @@ const Home = () => {
                 </div> 
 
                 <div className='col-md-4'>
+                    right Siderbar
                 </div>  
         </div>
     )

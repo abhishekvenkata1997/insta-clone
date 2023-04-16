@@ -4,9 +4,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import moment from 'moment'
 import { GLOBALTYPES } from '../../../redux/actions/globalTypes'
+import { deletePost } from '../../../redux/actions/postAction'
+import {BASE_URL} from './../../../utils/config'
 
 const CardHeader = ({post}) => {
     const { auth } = useSelector(state => state)
+
+    const dispatch = useDispatch()
+
+    const navigate = useNavigate()
 
     const handleEditPost = () => {
         dispatch({
@@ -14,9 +20,17 @@ const CardHeader = ({post}) => {
             payload:{...post, onEdit: true}
         })
     }
-    const dispatch = useDispatch()
 
-    const navigate = useNavigate()
+    const handleDeletePost = () => {
+        if(window.confirm("Are you sure you want to delete this post?"))
+        {
+            dispatch(deletePost({post, auth}))
+            return navigate('/')
+        }
+    }
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(`${BASE_URL}/post/${post._id}`)
+    }
 
 
     return (
@@ -51,7 +65,8 @@ const CardHeader = ({post}) => {
                             </span>
                             Edit Post
                         </div>
-                        <div className='dropdown-item'>
+                        <div className='dropdown-item' onClick={handleDeletePost}>
+
                             <span className='material-icons'>
                                 delete_outline
                             </span>
@@ -59,7 +74,7 @@ const CardHeader = ({post}) => {
                         </div>
                         </>
                     }
-                        <div className='dropdown-item'>
+                        <div className='dropdown-item' onClick={handleCopyLink}>
                             <span className='material-icons'>
                                 content_copy
                             </span>

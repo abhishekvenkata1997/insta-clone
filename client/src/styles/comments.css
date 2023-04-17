@@ -24,6 +24,9 @@
 .comment_display{
     padding: 10px 25px;
 }
+.comment_card {
+    padding: 6px;
+}
 .comment_card .comment_content{
     background: #eee;
     padding: 7px;

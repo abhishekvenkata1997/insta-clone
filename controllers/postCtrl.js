@@ -49,7 +49,9 @@ const postCtrl = {
             const features = new APIfeatures(Posts.find({
 
                 user: [...req.user.following, req.user._id]
-            }).sort('-createdAt')
+            }), req.query).paginating()
+
+            const posts = await features.query.sort('-createdAt')
             .populate("user likes","avatar username fullname")
             .populate({
                 path:"comments",
@@ -130,7 +132,7 @@ const postCtrl = {
     },
     getUserPosts: async (req, res) => {
         try {
-
+ 
             const features = new APIfeatures(Posts.find({user: req.params.id}), req.query)
             .paginating()
 
@@ -139,7 +141,7 @@ const postCtrl = {
                 posts,
                 result: posts.length
             })
-
+            
 
         } catch (err) {
             return res.status(500).json({msg: err.message})
@@ -169,16 +171,19 @@ const postCtrl = {
     },
 
     getPostsDicover: async (req, res) => {
-
+        
         try{
-            const features = new APIfeatures(Posts.find({
-                user: {$nin: [...req.user.following, req.user._id]}
-            }), req.query).paginating()
+           
+            const newArr = [...req.user.following, req.user._id]
 
-            const posts = await features.query.sort('-createdAt')
+            const num = req.query.num || 9
 
+            const posts = await Posts.aggregate([
+                { $match: {user: { $nin: newArr}} },
+                { $sample: {size: Number(num)}}
+            ])
 
-            res.json({
+            return res.json({
                 msg: 'Success!',
                 result: posts.length,
                 posts
@@ -204,6 +209,55 @@ const postCtrl = {
         } catch (err) {
             return res.status(500).json({msg: err.message})
         }
+    },
+    savePost: async (req, res) => {
+        try {
+            const user = await Users.find({_id: req.user._id, saved: req.params.id})
+            if(user.length > 0) return res.status(400).json({msg: "You saved this post."})
+
+            const save = await Users.findOneAndUpdate({_id: req.user._id}, {
+                $push: {saved: req.params.id}
+            }, {new: true})
+
+            if(!save) return res.status(400).json({msg: 'This user does not exist.'})
+
+            res.json({msg: 'Saved Post!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    unSavePost: async (req, res) => {
+        try {
+            const save = await Users.findOneAndUpdate({_id: req.user._id}, {
+                $pull: {saved: req.params.id}
+            }, {new: true})
+
+            if(!save) return res.status(400).json({msg: 'This user does not exist.'})
+
+            res.json({msg: 'unSaved Post!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    getSavePosts: async (req, res) => {
+        try {
+            const features = new APIfeatures(Posts.find({
+                _id: {$in: req.user.saved}
+            }), req.query).paginating()
+
+            const savePosts = await features.query.sort("-createdAt")
+
+            res.json({
+                savePosts,
+                result: savePosts.length
+            })
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
 
 }
 

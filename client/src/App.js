@@ -9,6 +9,7 @@ import Register from './pages/register'
 import { refreshToken } from './redux/actions/authActions';
 import {useSelector, useDispatch} from 'react-redux'
 import { getPosts } from './redux/actions/postAction'
+import {getSuggestions} from './redux/actions/suggestionAction'
 
 import Alert from './components/alert/Alert'
 import Header from './components/header/header'
@@ -26,7 +27,10 @@ function App() {
   },[dispatch])
 
   useEffect(() => {
-    if(auth.token) dispatch(getPosts(auth.token))
+    if(auth.token) {
+      dispatch(getPosts(auth.token))
+      dispatch(getSuggestions(auth.token))
+    }
   },[dispatch, auth.token])
 
 
@@ -43,9 +47,13 @@ function App() {
               <Route exact path='/' element={auth.token ? <Home /> : <Login />} />
               <Route exact path='/register' element = {<Register/>} />
               <Route exact path='/Login' element={<Login />} />
-              <Route exact path='/:page' element={<PrivateRouter><PageRender /></PrivateRouter>}/>
-              <Route exact path='/:page/:id' element={<PrivateRouter><PageRender /></PrivateRouter>}/>
             </Routes>
+             <div className='wrap_page'>
+              <Routes>
+                <Route exact path='/:page' element={<PrivateRouter><PageRender /></PrivateRouter>}/>
+                <Route exact path='/:page/:id' element={<PrivateRouter><PageRender /></PrivateRouter>}/>
+              </Routes>
+            </div>
           </Router>
         </div>
       </div>

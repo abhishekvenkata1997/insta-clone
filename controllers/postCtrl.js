@@ -1,6 +1,23 @@
 const { populate } = require('../models/userModel')
 const Posts = require('./../models/postModel')
+const Users = require('./../models/userModel')
+const Comments = require('./../models/commentModel')
 
+
+class APIfeatures {
+    constructor(query, queryString){
+        this.query = query;
+        this.queryString = queryString;
+    }
+
+    paginating(){
+        const page = this.queryString.page * 1 || 1
+        const limit = this.queryString.limit * 1 || 9
+        const skip = (page - 1) * limit
+        this.query = this.query.skip(skip).limit(limit)
+        return this;
+    }
+}
 const postCtrl = {
     createPost: async (req, res) => {
         try{
@@ -29,8 +46,8 @@ const postCtrl = {
 
     getPosts: async(req,res) => {
         try{
-            console.log(req.user)
-            const posts = await Posts.find({
+            const features = new APIfeatures(Posts.find({
+
                 user: [...req.user.following, req.user._id]
             }).sort('-createdAt')
             .populate("user likes","avatar username fullname")
@@ -59,6 +76,13 @@ const postCtrl = {
             const post = await Posts.findOneAndUpdate({_id: req.params.id}, {
                 content, images
             }).populate("user likes", "avatar username fullname")
+            .populate({
+                path:"comments",
+                populate:{
+                    path: "user likes",
+                    select:"-password"
+                }
+            })
 
             res.json({
                 msg: "Updated Post!",
@@ -104,7 +128,82 @@ const postCtrl = {
             return res.status(500).json({msg: err.message})
         }
     },
+    getUserPosts: async (req, res) => {
+        try {
 
+            const features = new APIfeatures(Posts.find({user: req.params.id}), req.query)
+            .paginating()
+
+            const posts = await features.query.sort("-createdAt")
+            res.json({
+                posts,
+                result: posts.length
+            })
+
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    getPost: async (req, res) => {
+        try {
+            const post = await Posts.findById(req.params.id)
+            .populate("user likes", "avatar username fullname followers")
+            .populate({
+                path: "comments",
+                populate: {
+                    path: "user likes",
+                    select: "-password"
+                }
+            })
+
+            if(!post) return res.status(400).json({msg: 'This post does not exist.'})
+
+            res.json({
+                post
+            })
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+
+    getPostsDicover: async (req, res) => {
+
+        try{
+            const features = new APIfeatures(Posts.find({
+                user: {$nin: [...req.user.following, req.user._id]}
+            }), req.query).paginating()
+
+            const posts = await features.query.sort('-createdAt')
+
+
+            res.json({
+                msg: 'Success!',
+                result: posts.length,
+                posts
+            })
+        }
+        catch(err){
+            res.status(500).json({msg: err.message})
+        }
+    }, 
+    deletePost: async (req, res) => {
+        try {
+            const post = await Posts.findOneAndDelete({_id: req.params.id, user: req.user._id})
+            await Comments.deleteMany({_id: {$in: post.comments }})
+
+            res.json({
+                msg: 'Deleted Post!',
+                newPost: {
+                    ...post,
+                    user: req.user
+                }
+            })
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
 
 }
 

@@ -5,7 +5,7 @@ const Posts = require('../models/postModel')
 const commentCtrl = {
     createComment: async (req, res) => {
         try {
-            const { postId, content, tag, reply } = req.body
+            const { postId, content, tag, reply, postUserId } = req.body
 
             const post = await Posts.findById(postId)
             if(!post) return res.status(400).json({msg: "This post does not exist."})
@@ -16,7 +16,7 @@ const commentCtrl = {
             }
 
             const newComment = new Comments({
-                user: req.user._id, content, tag, reply
+                user: req.user._id, content, tag, reply, postUserId, postId
             })
 
             await Posts.findOneAndUpdate({_id: postId}, {

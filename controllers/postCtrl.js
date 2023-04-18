@@ -18,6 +18,7 @@ class APIfeatures {
         return this;
     }
 }
+
 const postCtrl = {
     createPost: async (req, res) => {
         try{
@@ -36,7 +37,10 @@ const postCtrl = {
 
             res.json({
                 msg: 'Create Post!',
-                newPost
+                newPost: {
+                    ...newPost._doc,
+                    user: req.user
+                }
             })
         }
         catch(err) {
@@ -47,12 +51,11 @@ const postCtrl = {
     getPosts: async(req,res) => {
         try{
             const features = new APIfeatures(Posts.find({
-
                 user: [...req.user.following, req.user._id]
             }), req.query).paginating()
 
             const posts = await features.query.sort('-createdAt')
-            .populate("user likes","avatar username fullname")
+            .populate("user likes","avatar username fullname followers")
             .populate({
                 path:"comments",
                 populate:{

@@ -4,6 +4,7 @@ import {useSelector, useDispatch} from 'react-redux'
 import { logout } from '../../redux/actions/authActions'
 import { GLOBALTYPES } from '../../redux/actions/globalTypes'
 import Avatar from '../Avatar'
+import NotifyModal from '../NotifyModal'
 
 const Menu = () => {
 
@@ -11,24 +12,23 @@ const Menu = () => {
         {label: 'Home', icon: 'home', path: '/'},
         {label: 'Message', icon: 'near_me', path: '/message'},
         {label: 'Discover', icon: 'explore', path: '/discover'},
-        {label: 'Notify', icon: 'favorite', path: '/notify'},
-
     ]
 
-    const { auth, theme } = useSelector(state => state)
+    const { auth, theme, notify } = useSelector(state => state)
     const dispatch = useDispatch()
     const { pathname } = useLocation()
-
+  
     const isActive = (pn) => {
         if(pn === pathname){
             return 'active'
         }
     }
-return (
-<div className="menu">
-<ul className="navbar-nav flex-row">
-    {
-        navLinks.map((link,index) => (
+
+        return (
+        <div className="menu">
+        <ul className="navbar-nav flex-row">
+        {
+            navLinks.map((link,index) => (
             <li className={`nav-item px-2 ${isActive(link.path)}`} key={index}>
                 <Link className="nav-link" to={link.path}>
                     <span className="material-icons">
@@ -36,13 +36,32 @@ return (
                     </span>
                 </Link>
             </li>
-        ))
-    }
+            ))
+        }
+
+    <li className="nav-item dropdown"
+            style={{opacity: 1}}>
+        <span className="nav-link position-relative"
+        id="navbarDropdown" role="button" 
+        data-toggle="dropdown" aria-haspopup="true" 
+        aria-expanded="false">
+        <span className='material-icons' style={{color: notify.data.length > 0 ? 'crimson' : "grey"}}>
+            favorite
+        </span>
+        <span className='notify_length'>
+            {notify.data.length}
+        </span>   
+        </span>
+        <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+            <NotifyModal />
+        </div>
+    </li>
+
+
 
     <li className="nav-item dropdown"
     style={{opacity: 1}}>
-        <span className="nav-link dropdown-toggle"
-        id="navbarDropdown" role="button" 
+        <span className="nav-link dropdown-toggle" id="navbarDropdown" role="button" 
         data-toggle="dropdown" aria-haspopup="true" 
         aria-expanded="false">
         <Avatar src={auth.user.avatar} size="medium-avatar"/>
@@ -58,8 +77,8 @@ return (
         onClick={() => dispatch(logout())}>Logout</Link>
     </div>
     </li>
-</ul>
-</div>
-);
+    </ul>
+    </div>
+    );
 }
 export default Menu;

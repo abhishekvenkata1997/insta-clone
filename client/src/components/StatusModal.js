@@ -5,12 +5,11 @@ import {createPost, updatePost} from './../redux/actions/postAction'
 
 const StatusModal = () => {
 
-    const {auth, theme, status} = useSelector(state => state)
+    const {auth, theme, status, socket} = useSelector(state => state)
     const dispatch = useDispatch()
 
     const [content, setContent] = useState('')
     const [images, setImages] = useState([])
-
     const [stream, setStream ] = useState(false)
     const videoRef = useRef()
     const refCanvas = useRef()
@@ -21,19 +20,14 @@ const StatusModal = () => {
         
         let err = ""
         let newImages = []
-
-
         files.forEach(file => {
             if(!file) return err = "File does not exist"
-
             if(file.type !== 'image/jpeg' && file.type !== 'image/png')
             {
                 return err = "Image format is in incorrect."
             }
-
             return newImages.push(file)
         } )
-
         if(err){ dispatch({type: GLOBALTYPES.ALERT, payload: {error: err}}) }
         setImages([...images, ...newImages])
         
@@ -44,7 +38,6 @@ const StatusModal = () => {
         newArr.splice(index, 1)
         setImages(newArr)
     }
-
     const handleStream = () => {
         setStream(true)
         if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
@@ -52,32 +45,25 @@ const StatusModal = () => {
             .then(mediaStream => {
                 videoRef.current.srcObject = mediaStream
                 videoRef.current.play()
-
                 const track = mediaStream.getTracks()
                 setTracks(track[0])
             }).catch(err => console.log(err))
         }
     }
-
-
     const handleCapture = () => {
         const width = videoRef.current.clientWidth;
         const height = videoRef.current.clientHeight;
-
         refCanvas.current.setAttribute("width", width)
         refCanvas.current.setAttribute("height", height)
-
         const ctx = refCanvas.current.getContext('2d')
         ctx.drawImage(videoRef.current, 0, 0, width, height)
         let URL = refCanvas.current.toDataURL()
         setImages([...images, {camera: URL}])
     }
-
     const handleStopStream = () => {
         tracks.stop()
         setStream(false)
     }
-
     const handleSubmit = (e) => {
         e.preventDefault()
         if(images.length === 0)
@@ -87,14 +73,12 @@ const StatusModal = () => {
                 payload: {error: "Please add images"}
             })
         }
-
         if(status.onEdit){
             dispatch(updatePost({content, images,auth, status}))
         } else {
-            dispatch(createPost({content, images, auth}))
+            dispatch(createPost({content, images, auth, socket}))
         }
 
-        
 
         setContent('')
         setImages([])
@@ -103,18 +87,15 @@ const StatusModal = () => {
             type: GLOBALTYPES.STATUS,
             payload: false
         })
-
     }
-
     useEffect(() => {
         if(status.onEdit){
             setContent(status.content)
             setImages(status.images)
-
         }
     },[status])
-
     return (
+
         <div className='status_modal'>
             <form onSubmit={handleSubmit}>
                 <div className='status_header'>
@@ -130,12 +111,10 @@ const StatusModal = () => {
                         &times;
                     </span>
                 </div>
-
                 <div className='status_body'>
                     <textarea name='content' value={content}
                     placeholder={`${auth.user.username}, what are you thinking?}`}
                     onChange = {e => setContent(e.target.value)}/>
-
                     <div className="show_images">
                         {
                             images.map((img, index) => (
@@ -148,7 +127,6 @@ const StatusModal = () => {
                             ))
                         }
                     </div>
-
                     {
                         stream &&
                         <div className='stream'>
@@ -160,7 +138,6 @@ const StatusModal = () => {
                             <canvas ref={refCanvas} style={{display: 'none'}}/>
                         </div>
                     }
-
                     <div className='input_images'>
                         {
                             stream 
@@ -179,13 +156,11 @@ const StatusModal = () => {
                     
                     </div>
                 </div>
-
                 <div className='status_footer'>
                     <button className='btn btn-secondary w-100' type="submit">
                         Post
                     </button>
                 </div>
-
                 
             </form>
         </div>

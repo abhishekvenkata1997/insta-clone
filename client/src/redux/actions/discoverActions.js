@@ -4,7 +4,7 @@ import { getDataAPI } from './../../utils/fetchData'
 export const DISCOVER_TYPES = {
     LOADING: 'LOADING_DISCOVER',
     GET_POSTS: 'GET_DISCOVERPOSTS',
-    UPDATE_POSTS: 'UPDATE_DISCOVER_POST'
+    UPDATE_POST: 'UPDATE_DISCOVER_POST'
 }
 
 export const getDiscoverPosts = (token) => async (dispatch) => {

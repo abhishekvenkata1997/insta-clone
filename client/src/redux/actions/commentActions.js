@@ -1,8 +1,8 @@
 import {GLOBALTYPES, EditData, DeleteData } from './globalTypes'
 import {POST_TYPES} from './postAction'
 import {postDataAPI, patchDataAPI, deleteDataAPI} from './../../utils/fetchData'
-
-export const createComment = ({post,newComment, auth}) => async (dispatch) => {
+import { createNotify, removeNotify } from './notifyAction'
+export const createComment = ({post,newComment, auth, socket}) => async (dispatch) => {
 
     const newPost = {...post, comments: [...post.comments, newComment]}
     dispatch({
@@ -20,6 +20,18 @@ export const createComment = ({post,newComment, auth}) => async (dispatch) => {
             type: POST_TYPES.UPDATE_POST,
             payload: newPost
         })
+
+        //Socket
+        socket.emit('createComment',newPost)
+
+        // Notify
+        const msg = {
+            id: res.data.newComment._id,
+            text: newComment.reply ? 'mentioned you in a comment' : 'has commented on your post',
+            recipients: newComment.reply ? [newComment.tag._id]:[post.user._id],
+            url: `/post/${post._id}`,
+        }
+        dispatch(createNotify({msg, auth, socket}))
     }
     catch(err){
         dispatch({
@@ -32,7 +44,7 @@ export const createComment = ({post,newComment, auth}) => async (dispatch) => {
 export const updateComment = ({comment, post, content, auth}) => async (dispatch) => {
     const newComments = EditData(post.comments, comment._id, {...comment, content})
     const newPost = {...post, comments: newComments}
-
+    
     dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost })
     try {
         patchDataAPI(`comment/${comment._id}`, { content }, auth.token)
@@ -47,7 +59,7 @@ export const likeComment = ({comment, post, auth}) => async (dispatch) => {
     const newComments = EditData(post.comments, comment._id, newComment)
 
     const newPost = {...post, comments: newComments}
-
+    
     dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost })
 
     try {
@@ -64,7 +76,7 @@ export const unLikeComment = ({comment, post, auth}) => async (dispatch) => {
     const newComments = EditData(post.comments, comment._id, newComment)
 
     const newPost = {...post, comments: newComments}
-
+    
     dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost })
 
     try {
@@ -74,21 +86,32 @@ export const unLikeComment = ({comment, post, auth}) => async (dispatch) => {
     }
 }
 
-export const deleteComment = ({post, comment, auth}) => async (dispatch) => {
+export const deleteComment = ({post, comment, auth, socket}) => async (dispatch) => {
     const deleteArr = [...post.comments.filter(cm => cm.reply === comment._id), comment]
-
+    
     const newPost = {
         ...post,
         comments: post.comments.filter(cm => !deleteArr.find(da => cm._id === da._id))
     }
 
     dispatch({ type: POST_TYPES.UPDATE_POST, payload: newPost })
-
+    
+    socket.emit('deleteComment', newPost)
     try {
        deleteArr.forEach(item => {
-
+            console.log("deleting comment"+comment)
             deleteDataAPI(`comment/${item._id}`, auth.token)
+
+            // Notify
+            const msg = {
+                id: item._id,
+                text: comment.reply ? 'mentioned you in a comment' : 'has commented on your post',
+                recipients: comment.reply ? [comment.tag._id]:[post.user._id],
+                url: `/post/${post._id}`,
+            }
+        dispatch(removeNotify({msg, auth, socket}))
        })
+       
     } catch (err) {
         dispatch({ type: GLOBALTYPES.ALERT, payload: {error: err.response.data.msg} })
     }

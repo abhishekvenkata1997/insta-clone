@@ -4,11 +4,22 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const authRouter = require('./routes/authRoutes')
+const SocketServer = require('./socketServer')
 
 const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(cookieParser())
+
+
+const http = require('http').createServer(app)
+const io = require('socket.io')(http)
+
+const users = []
+io.on('connection', socket =>{
+    console.log(socket.id+"Connected!")
+    SocketServer(socket)
+})
 
 //Routes
 app.use('/api',require('./routes/authRoutes'))
@@ -30,6 +41,6 @@ mongoose.connection.on('error', err => {
 })
 
 const port = process.env.PORT || 5000
-app.listen(port, () => {
+http.listen(port, () => {
     console.log("Server is running in port:"+port);
 })

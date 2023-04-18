@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {createComment} from './../../redux/actions/commentActions'
-import Icons from './../Icons'
 
 const InputComment = ({children, post, onReply, setOnReply}) => {
     const [content, setContent] = useState('')
@@ -43,8 +42,6 @@ const InputComment = ({children, post, onReply, setOnReply}) => {
                 color: theme ? 'white' : '#111',
                 background: theme ? 'rgba(0,0,0,.03)' : '',
             }} />
-
-            <Icons setContent={setContent} content={content} theme={theme} />
 
 
             <button type="submit" className="postBtn">

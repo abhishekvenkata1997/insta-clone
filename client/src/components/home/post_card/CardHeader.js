@@ -8,12 +8,10 @@ import { deletePost } from '../../../redux/actions/postAction'
 import {BASE_URL} from './../../../utils/config'
 
 const CardHeader = ({post}) => {
-    const { auth } = useSelector(state => state)
-
+    
+    const { auth, socket } = useSelector(state => state)
     const dispatch = useDispatch()
-
     const navigate = useNavigate()
-
     const handleEditPost = () => {
         dispatch({
             type: GLOBALTYPES.STATUS, 
@@ -24,7 +22,7 @@ const CardHeader = ({post}) => {
     const handleDeletePost = () => {
         if(window.confirm("Are you sure you want to delete this post?"))
         {
-            dispatch(deletePost({post, auth}))
+            dispatch(deletePost({post, auth, socket}))
             return navigate('/')
         }
     }

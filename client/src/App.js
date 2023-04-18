@@ -11,19 +11,28 @@ import {useSelector, useDispatch} from 'react-redux'
 import { getPosts } from './redux/actions/postAction'
 import {getSuggestions} from './redux/actions/suggestionAction'
 
+import io from 'socket.io-client'
 import Alert from './components/alert/Alert'
 import Header from './components/header/header'
 import StatusModal from './components/StatusModal'
+import { GLOBALTYPES } from './redux/actions/globalTypes';
+import SocketClient from './SocketClient'
 function App() {
 
   const { auth, status, modal } = useSelector(state => state)
-  console.log("auth token in Login Component:", auth.token)
+  //console.log("auth token in Login Component:", auth.token)
   const dispatch = useDispatch()
- console.log("AUTH TOKEN:"+auth.token)
+ //console.log("AUTH TOKEN:"+auth.token)
 
  
   useEffect(() => {
     dispatch(refreshToken())
+    const socket = io()
+    dispatch({
+      type: GLOBALTYPES.SOCKET,
+      payload: socket
+    })
+    return () => socket.close()
   },[dispatch])
 
   useEffect(() => {
@@ -43,6 +52,7 @@ function App() {
             <Alert/>
             {auth.token && <Header/>}
             {status && <StatusModal/>}
+            {auth.token && <SocketClient/>}
             <Routes>
               <Route exact path='/' element={auth.token ? <Home /> : <Login />} />
               <Route exact path='/register' element = {<Register/>} />

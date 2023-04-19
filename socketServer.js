@@ -91,6 +91,37 @@ const SocketServer = (socket) => {
          const user = users.find(user => user.id === newUser._id)
          user && socket.to(`${user.socketId}`).emit('unFollowToClient',newUser)
      }) 
+
+          // Notification
+          socket.on('createNotify', msg => {
+
+            const clients = users.filter(user => msg.recipients.includes(user.id))
+            const uniqueClients = clients.filter((client, index, self) =>
+      index === self.findIndex((c) => c.id === client.id)
+    );
+            if(uniqueClients.length > 0)
+            {
+                console.log("React out now")
+                uniqueClients.forEach(client => {
+                    socket.to(`${client.socketId}`).emit('createNotifyToClient',msg)
+                })
+            }
+         })
+    
+         socket.on('removeNotify', msg => {
+    
+            const clients = users.filter(user => msg.recipients.includes(user.id))
+            const uniqueClients = clients.filter((client, index, self) =>
+      index === self.findIndex((c) => c.id === client.id)
+    );
+            if(uniqueClients.length > 0)
+            {
+                console.log("React out now")
+                uniqueClients.forEach(client => {
+                    socket.to(`${client.socketId}`).emit('removeNotifyToClient',msg)
+                })
+            }
+         })
 }
 
 module.exports = SocketServer

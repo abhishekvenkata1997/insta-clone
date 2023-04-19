@@ -15,7 +15,7 @@ export const POST_TYPES = {
 
 export const createPost = ({content, images, auth, socket}) => async (dispatch) => {
     
-    let media = []
+    let media = []  
     try{
         dispatch({
             type: GLOBALTYPES.ALERT,
@@ -52,8 +52,6 @@ export const createPost = ({content, images, auth, socket}) => async (dispatch) 
             type: GLOBALTYPES.ALERT,
             payload: {error: err.response.data.msg}
         })
-
-        
         
     }
 }

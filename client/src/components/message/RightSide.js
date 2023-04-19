@@ -1,62 +1,20 @@
-import React, { useState, useEffect } from "react";
-import UserCard from "../UserCard";
-import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
-import MsgDisplay from "./MsgDisplay";
-
-const RightSide = () => {
-  const { auth, message } = useSelector((state) => state);
-  const dispatch = useDispatch();
-
-  const { id } = useParams();
-  const [user, setUser] = useState([]);
-  const [text, setText] = useState("");
-
-  useEffect(() => {
-    const newUser = message.users.find((user) => user._id === id);
-    if (newUser) {
-      setUser(newUser);
-    }
-  }, [message.users, id]);
-
-  return (
-    <>
-      <div className="message_header">
-        <UserCard user={user}>
-          <i className="fas fa-trash text-danger" />
-        </UserCard>
-      </div>
-
-      <div className="chat_container">
-        <div className="chat_display">
-          <div className="chat_row other_message">
-            <MsgDisplay user={user} />
-          </div>
-
-          <div className="chat_row you_message">
-            <MsgDisplay user={auth.user} />
-          </div>
-        </div>
-      </div>
-
-      <form className="chat_input">
-        <input
-          type="text"
-          placeholder="Enter your message...."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-
-        <button
-          type="submit"
-          className="material-icons"
-          disabled={text ? false : true}
-        >
-          near_me
-        </button>
-      </form>
-    </>
-  );
+export const GLOBALTYPES = {
+  AUTH: "AUTH",
+  ALERT: "ALERT",
+  THEME: "THEME",
+  STATUS: "STATUS",
+  MODAL: "MODAL",
+  SOCKET: "SOCKET",
+  ONLINE: "ONLINE",
+  OFFLINE: "OFFLINE",
 };
 
-export default RightSide;
+export const EditData = (data, id, post) => {
+  const newData = data.map((item) => (item._id === id ? post : item));
+  return newData;
+};
+
+export const DeleteData = (data, id) => {
+  const newData = data.filter((item) => item._id !== id);
+  return newData;
+};

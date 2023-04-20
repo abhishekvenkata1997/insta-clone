@@ -67,7 +67,6 @@ function App() {
             {status && <StatusModal/>}
             {auth.token && <SocketClient/>}
             <Routes>
-              <Route exact path='/register' element = {<Register/>} />
               <Route exact path='/Login' element={<Login />} />
               <Route exact path='/' element={auth.token ? <Home /> : <Login />} />
             </Routes>

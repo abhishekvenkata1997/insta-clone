@@ -23,8 +23,10 @@ const valid = ({fullname, username, email, password, cf_password}) => {
 
     if(!password) {
         err.password = "Please add your password."
-    }else if(password.length < 6){
-        err.password = "Password must be at least 6 characters."
+    }else if(password.length < 8){
+        err.password = "Password must be at least 8 characters."
+    }else if(!validatePassword(password)){
+        err.password = "Password must contain at least 1 capital, 1 small and 1 special character."
     }
 
     if(password !== cf_password) {
@@ -41,6 +43,11 @@ const valid = ({fullname, username, email, password, cf_password}) => {
 function validateEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
+}
+
+function validatePassword(password) {
+    const regEx = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/;
+    return regEx.test(password);
 }
 
 export default valid

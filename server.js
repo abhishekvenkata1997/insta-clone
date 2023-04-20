@@ -16,8 +16,8 @@ const io = require("socket.io")(http);
 
 const users = [];
 io.on("connection", (socket) => {
-    console.log(socket.id + "Connected!");
-    SocketServer(socket);
+  console.log(socket.id + "Connected!");
+  SocketServer(socket);
 });
 
 //Routes
@@ -30,19 +30,19 @@ app.use("/api", require("./routes/messageRouter"));
 
 const URI = process.env.MONGODB_URL;
 mongoose.connect(URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
 mongoose.connection.on("connected", () => {
-    console.log("Connected to the database");
+  console.log("Connected to the database");
 });
 
 mongoose.connection.on("error", (err) => {
-    console.log("Mongo DB Error in connection: " + err);
+  console.log("Mongo DB Error in connection: " + err);
 });
 
 const port = process.env.PORT || 6000;
 http.listen(port, () => {
-    console.log("Server is running in port:" + port);
+  console.log("Server is running in port:" + port);
 });

@@ -26,7 +26,7 @@ const Following = ({users, setShowFollowing}) => {
                 <div className="close" onClick={() => setShowFollowing(false)}>
                     &times;
                 </div>
-
+                
             </div>
         </div>
     )

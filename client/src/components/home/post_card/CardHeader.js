@@ -8,9 +8,10 @@ import { deletePost } from '../../../redux/actions/postAction'
 import {BASE_URL} from './../../../utils/config'
 
 const CardHeader = ({post}) => {
-    
     const { auth, socket } = useSelector(state => state)
+
     const dispatch = useDispatch()
+
     const navigate = useNavigate()
     const handleEditPost = () => {
         dispatch({
@@ -29,7 +30,6 @@ const CardHeader = ({post}) => {
     const handleCopyLink = () => {
         navigator.clipboard.writeText(`${BASE_URL}/post/${post._id}`)
     }
-
 
     return (
         <div className="card_header">
@@ -64,7 +64,6 @@ const CardHeader = ({post}) => {
                             Edit Post
                         </div>
                         <div className='dropdown-item' onClick={handleDeletePost}>
-
                             <span className='material-icons'>
                                 delete_outline
                             </span>

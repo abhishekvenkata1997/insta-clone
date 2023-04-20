@@ -61,14 +61,14 @@ const LeftSide = () => {
   // Load More
   useEffect(() => {
     const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            setPage((p) => p + 1);
-          }
-        },
-        {
-          threshold: 0.1,
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((p) => p + 1);
         }
+      },
+      {
+        threshold: 0.1,
+      }
     );
 
     observer.observe(pageEnd.current);
@@ -88,60 +88,60 @@ const LeftSide = () => {
   }, [online, message.firstLoad, dispatch]);
 
   return (
-      <>
-        <form className="message_header" onSubmit={handleSearch}>
-          <input
-              type="text"
-              value={search}
-              placeholder="Enter to Search..."
-              onChange={(e) => setSearch(e.target.value)}
-          />
+    <>
+      <form className="message_header" onSubmit={handleSearch}>
+        <input
+          type="text"
+          value={search}
+          placeholder="Enter to Search..."
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
-          <button type="submit" style={{ display: "none" }}>
-            Search
-          </button>
-        </form>
+        <button type="submit" style={{ display: "none" }}>
+          Search
+        </button>
+      </form>
 
-        <div className="message_chat_list">
-          {searchUsers.length !== 0 ? (
-              <>
-                {searchUsers.map((user) => (
-                    <div
-                        key={user._id}
-                        className={`message_user ${isActive(user)}`}
-                        onClick={() => handleAddUser(user)}
-                    >
-                      <UserCard user={user} />
-                    </div>
-                ))}
-              </>
-          ) : (
-              <>
-                {message.users.map((user) => (
-                    <div
-                        key={user._id}
-                        className={`message_user ${isActive(user)}`}
-                        onClick={() => handleAddUser(user)}
-                    >
-                      <UserCard user={user} msg={true}>
-                        {user.online ? (
-                            <i className="fas fa-circle text-success" />
-                        ) : (
-                            auth.user.following.find(
-                                (item) => item._id === user._id
-                            ) && <i className="fas fa-circle" />
-                        )}
-                      </UserCard>
-                    </div>
-                ))}
-              </>
-          )}
+      <div className="message_chat_list">
+        {searchUsers.length !== 0 ? (
+          <>
+            {searchUsers.map((user) => (
+              <div
+                key={user._id}
+                className={`message_user ${isActive(user)}`}
+                onClick={() => handleAddUser(user)}
+              >
+                <UserCard user={user} />
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            {message.users.map((user) => (
+              <div
+                key={user._id}
+                className={`message_user ${isActive(user)}`}
+                onClick={() => handleAddUser(user)}
+              >
+                <UserCard user={user} msg={true}>
+                  {user.online ? (
+                    <i className="fas fa-circle text-success" />
+                  ) : (
+                    auth.user.following.find(
+                      (item) => item._id === user._id
+                    ) && <i className="fas fa-circle" />
+                  )}
+                </UserCard>
+              </div>
+            ))}
+          </>
+        )}
 
-          <button ref={pageEnd} style={{ opacity: 0 }}>
-            Load More
-          </button>
-        </div>
-      </>
+        <button ref={pageEnd} style={{ opacity: 0 }}>
+          Load More
+        </button>
+      </div>
+    </>
   );
 };
 

@@ -7,7 +7,6 @@ import { set } from 'mongoose'
 import { likePost, unLikePost, savePost, unSavePost } from '../../../redux/actions/postAction'
 import ShareModal from '../../ShareModal'
 import { BASE_URL } from '../../../utils/config'
-
 const CardFooter = ({post}) => {
     const [isLike, setIsLike] = useState(false)
     const [loadLike, setLoadLike] = useState(false)
@@ -73,6 +72,7 @@ const CardFooter = ({post}) => {
         <div className="card_footer">
             <div className="card_icon_menu">
                 <div>
+
                     <LikeButton isLike={isLike} 
                     handleLike={handleLike}
                     handleUnLike={handleUnLike}/>
@@ -82,7 +82,6 @@ const CardFooter = ({post}) => {
                     </Link>
 
                     <img src={Send} alt="Send" onClick={() => setIsShare(!isShare)}/>
-
                 </div>
 
                 {   
@@ -93,6 +92,7 @@ const CardFooter = ({post}) => {
                     onClick= {handleSavePost}/>
                     
                 }
+
             </div>
 
 
@@ -105,11 +105,9 @@ const CardFooter = ({post}) => {
                     {post.comments.length} comments
                 </h6>
             </div>
-
             {
                 isShare && <ShareModal url={`${BASE_URL}/post/${post._id}`} theme={theme} />
             }
-
         </div>
     )
 }

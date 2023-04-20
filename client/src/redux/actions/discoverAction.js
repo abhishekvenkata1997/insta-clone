@@ -1,5 +1,5 @@
 import {GLOBALTYPES} from './globalTypes'
-import { getDataAPI } from './../../utils/fetchData'
+import { getDataAPI } from '../../utils/fetchData'
 
 export const DISCOVER_TYPES = {
     LOADING: 'LOADING_DISCOVER',

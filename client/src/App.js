@@ -5,6 +5,8 @@ import PrivateRouter from './customRouter/privateRouter';
 import Home from './pages/home'
 import Login from './pages/login'
 import Register from './pages/register'
+import Admin from './pages/admin'
+import ProtectedRoute from './customRouter/ProtectedRoute';
 
 import { refreshToken } from './redux/actions/authActions';
 import {useSelector, useDispatch} from 'react-redux'
@@ -73,8 +75,10 @@ function App() {
              <div className='wrap_page'>
               <Routes>
                 <Route exact path='/register' element = {<Register/>} />
+                <Route exact path='/admin' element={<ProtectedRoute><Admin/></ProtectedRoute>} />
                 <Route exact path='/:page' element={<PrivateRouter><PageRender /></PrivateRouter>}/>
                 <Route exact path='/:page/:id' element={<PrivateRouter><PageRender /></PrivateRouter>}/>
+
               </Routes>
             </div>
           </Router>

@@ -1,7 +1,8 @@
 import {React, useState, useEffect} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
-import {login} from '../redux/actions/authActions'
+import {login, loginAdmin} from '../redux/actions/authActions'
 import { useDispatch, useSelector } from 'react-redux'
+
 
 
 const Login = () => {
@@ -27,8 +28,23 @@ const Login = () => {
 
     const handleSubmit = e => {
         e.preventDefault();
-        console.log(userData)
-        dispatch(login(userData))
+        
+        let adminEmail = document.getElementById('exampleInputEmail1').value;
+        let adminPassword = document.getElementById('exampleInputPassword1').value;
+        if(adminEmail === 'admin@instagram.com' && adminPassword === 'password'){
+            console.log("Hello")
+            localStorage.setItem('admin', 'admin');
+            navigate('/admin')
+        }else if(adminEmail !== 'admin@instagram.com' && adminPassword !== 'password'){
+            alert("Enter Admin Credentials")
+        }
+        else{
+            console.log(userData)
+            dispatch(login(userData))
+        }
+       
+        
+        
     }
     return (
         <div className="auth_page">

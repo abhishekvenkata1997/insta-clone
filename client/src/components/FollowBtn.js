@@ -53,4 +53,4 @@ const FollowBtn = ({user}) => {
    
 }
 
-export default FollowBtn
+export default FollowBtn;

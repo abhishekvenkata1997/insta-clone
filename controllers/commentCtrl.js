@@ -1,130 +1,98 @@
-const Conversations = require("../models/conversationModel");
-const Messages = require("../models/messageModel");
+const Comments = require('../models/commentModel')
+const Posts = require('../models/postModel')
 
-class APIfeatures {
-  constructor(query, queryString) {
-    this.query = query;
-    this.queryString = queryString;
-  }
 
-  paginating() {
-    const page = this.queryString.page * 1 || 1;
-    const limit = this.queryString.limit * 1 || 9;
-    const skip = (page - 1) * limit;
-    this.query = this.query.skip(skip).limit(limit);
-    return this;
-  }
+const commentCtrl = {
+    createComment: async (req, res) => {
+        try {
+            const { postId, content, tag, reply, postUserId } = req.body
+
+            const post = await Posts.findById(postId)
+            if(!post) return res.status(400).json({msg: "This post does not exist."})
+
+            if(reply){
+                const cm = await Comments.findById(reply)
+                if(!cm) return res.status(400).json({msg: "This comment does not exist."})
+            }
+
+            const newComment = new Comments({
+                user: req.user._id, content, tag, reply, postUserId, postId
+            })
+
+            await Posts.findOneAndUpdate({_id: postId}, {
+                $push: {comments: newComment._id}
+            }, {new: true})
+
+            await newComment.save()
+
+            res.json({newComment})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    updateComment: async (req, res) => {
+        try {
+            const { content } = req.body
+            
+            await Comments.findOneAndUpdate({
+                _id: req.params.id, user: req.user._id
+            }, {content})
+
+            res.json({msg: 'Update Success!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    likeComment: async (req, res) => {
+        try {
+            const comment = await Comments.find({_id: req.params.id, likes: req.user._id})
+            if(comment.length > 0) return res.status(400).json({msg: "You liked this post."})
+
+            await Comments.findOneAndUpdate({_id: req.params.id}, {
+                $push: {likes: req.user._id}
+            }, {new: true})
+
+            res.json({msg: 'Liked Comment!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    unLikeComment: async (req, res) => {
+        try {
+
+            await Comments.findOneAndUpdate({_id: req.params.id}, {
+                $pull: {likes: req.user._id}
+            }, {new: true})
+
+            res.json({msg: 'UnLiked Comment!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    deleteComment: async (req, res) => {
+        try {
+            const comment = await Comments.findOneAndDelete({
+                _id: req.params.id,
+                $or: [
+                    {user: req.user._id},
+                    {postUserId: req.user._id}
+                ]
+            })
+
+            await Posts.findOneAndUpdate({_id: comment.postId}, {
+                $pull: {comments: req.params.id}
+            })
+
+            res.json({msg: 'Deleted Comment!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
 }
 
-const messageCtrl = {
-  createMessage: async (req, res) => {
-    try {
-      const { recipient, text, media } = req.body;
-
-      if (!recipient || (!text.trim() && media.length === 0)) return;
-
-      const newConversation = await Conversations.findOneAndUpdate(
-        {
-          $or: [
-            { recipients: [req.user._id, recipient] },
-            { recipients: [recipient, req.user._id] },
-          ],
-        },
-        {
-          recipients: [req.user._id, recipient],
-          text,
-          media,
-        },
-        { new: true, upsert: true }
-      );
-
-      const newMessage = new Messages({
-        conversation: newConversation._id,
-        sender: req.user._id,
-        recipient,
-        text,
-        media,
-      });
-
-      await newMessage.save();
-
-      res.json({ msg: "Create Success!" });
-    } catch (err) {
-      return res.status(500).json({ msg: err.message });
-    }
-  },
-
-  getConversations: async (req, res) => {
-    try {
-      const features = new APIfeatures(
-        Conversations.find({
-          recipients: req.user._id,
-        }),
-        req.query
-      ).paginating();
-
-      const conversations = await features.query
-        .sort("-updatedAt")
-        .populate("recipients", "avatar username fullname");
-
-      res.json({
-        conversations,
-        result: conversations.length,
-      });
-    } catch (err) {
-      return res.status(500).json({ msg: err.message });
-    }
-  },
-  getMessages: async (req, res) => {
-    try {
-      const features = new APIfeatures(
-        Messages.find({
-          $or: [
-            { sender: req.user._id, recipient: req.params.id },
-            { sender: req.params.id, recipient: req.user._id },
-          ],
-        }),
-        req.query
-      ).paginating();
-
-      const messages = await features.query.sort("-createdAt");
-
-      res.json({
-        messages,
-        result: messages.length,
-      });
-    } catch (err) {
-      return res.status(500).json({ msg: err.message });
-    }
-  },
-
-  deleteMessages: async (req, res) => {
-    try {
-      // console.log("deleted");
-      await Messages.findOneAndDelete({
-        _id: req.params.id,
-        sender: req.user._id,
-      });
-      res.json({ msg: "Delete Success!" });
-    } catch (err) {
-      return res.status(500).json({ msg: err.message });
-    }
-  },
-  deleteConversation: async (req, res) => {
-    try {
-      const newConver = await Conversations.findOneAndDelete({
-        $or: [
-          { recipients: [req.user._id, req.params.id] },
-          { recipients: [req.params.id, req.user._id] },
-        ],
-      });
-      await Messages.deleteMany({ conversation: newConver._id });
-
-      res.json({ msg: "Delete Success!" });
-    } catch (err) {
-      return res.status(500).json({ msg: err.message });
-    }
-  },
-};
-
-module.exports = messageCtrl;
+module.exports = commentCtrl

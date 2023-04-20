@@ -35,7 +35,7 @@ const Login = () => {
             console.log("Hello")
             localStorage.setItem('admin', 'admin');
             navigate('/admin')
-        }else if(adminEmail !== 'admin@instagram.com' && adminPassword !== 'password'){
+        }else if(adminEmail === 'admin@instagram.com' && adminPassword !== 'password'){
             alert("Enter Admin Credentials")
         }
         else{

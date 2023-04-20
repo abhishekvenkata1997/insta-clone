@@ -48,7 +48,7 @@ export const getProfileUsers = ({ id, auth}) => async (dispatch) => {
 export const updateProfileUser = ({userData, avatar, auth}) => async (dispatch) => {
 
     //const {fullname, mobile, address , website, story, gender } = userData;
-    console.log(userData);
+    //console.log(userData);
     if(!userData.fullname)
     return dispatch({type: GLOBALTYPES.ALERT, payload: {error: "Please add your full name."}})
 

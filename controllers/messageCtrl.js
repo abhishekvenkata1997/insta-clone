@@ -1,4 +1,4 @@
-const Conversations = require("../models/conversationModel");
+const Conversations = require('./../models/conservationModel');
 const Messages = require("../models/messageModel");
 
 class APIfeatures {

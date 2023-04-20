@@ -17,7 +17,6 @@ import Header from './components/header/header'
 import StatusModal from './components/StatusModal'
 import { GLOBALTYPES } from './redux/actions/globalTypes';
 import SocketClient from './SocketClient'
-
 function App() {
 
   const { auth, status, modal } = useSelector(state => state)

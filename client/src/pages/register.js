@@ -49,7 +49,7 @@ const Register = () => {
                     <input type="text" className="form-control" id="fullname" name="fullname"
                     onChange={handleChangeInput} value={fullname} 
                     style={{background: `${alert.fullname ? '#fd2d6a14' : ''}`}}/>
-
+                    
                     <small className="form-text text-danger">
                         {alert.fullname ? alert.fullname : ''}
                     </small>
@@ -60,7 +60,7 @@ const Register = () => {
                     <input type="text" className="form-control" id="username" name="username"
                     onChange={handleChangeInput} value={username.toLowerCase().replace(/ /g, '')}
                     style={{background: `${alert.username ? '#fd2d6a14' : ''}`}} />
-
+                    
                     <small className="form-text text-danger">
                         {alert.username ? alert.username : ''}
                     </small>
@@ -71,7 +71,7 @@ const Register = () => {
                     <input type="email" className="form-control" id="exampleInputEmail1" name="email"
                     aria-describedby="emailHelp" onChange={handleChangeInput} value={email} 
                     style={{background: `${alert.email ? '#fd2d6a14' : ''}`}}/>
-
+                    
                     <small className="form-text text-danger">
                         {alert.email ? alert.email : ''}
                     </small>
@@ -81,7 +81,7 @@ const Register = () => {
                     <label htmlFor="exampleInputPassword1">Password</label>
 
                     <div className="pass">
-
+                        
                         <input type={typePass? "text" : "password" }
                         className="form-control" id="exampleInputPassword1"
                         onChange={handleChangeInput} value={password} name="password" 
@@ -95,14 +95,14 @@ const Register = () => {
                         <small className="form-text text-danger">
                             {alert.password ? alert.password : ''}
                         </small>
-
+                
                 </div>
 
                 <div className="form-group">
                     <label htmlFor="cf_password">Confirm Password</label>
 
                     <div className="pass">
-
+                        
                         <input type={ typeCfPass ? "text" : "password" } 
                         className="form-control" id="cf_password"
                         onChange={handleChangeInput} value={cf_password} name="cf_password"
@@ -132,7 +132,7 @@ const Register = () => {
                         value="other" onChange={handleChangeInput}/>
                     </label>
                 </div>
-
+                
                 <button type="submit" className="btn btn-dark w-100">
                     Register
                 </button>
@@ -145,4 +145,4 @@ const Register = () => {
     )
 }
 
-export default Register;
+export default Register

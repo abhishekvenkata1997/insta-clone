@@ -42,6 +42,13 @@ mongoose.connection.on("error", (err) => {
   console.log("Mongo DB Error in connection: " + err);
 });
 
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static('client/build'))
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'))
+  })
+}
+
 const port = process.env.PORT || 6000;
 http.listen(port, () => {
   console.log("Server is running in port:" + port);

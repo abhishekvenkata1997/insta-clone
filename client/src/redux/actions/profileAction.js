@@ -2,7 +2,6 @@ import { GLOBALTYPES, DeleteData } from './globalTypes';
 import {getDataAPI , patchDataAPI} from './../../utils/fetchData';
 import {imageUpload} from './../../utils/imageUpload'
 import { createNotify, removeNotify } from './notifyAction';
-
 export const PROFILE_TYPES = {
     LOADING: 'LOADING_PROFILE',
     GET_USER: 'GET_PROFILE_USER',
@@ -48,14 +47,15 @@ export const getProfileUsers = ({ id, auth}) => async (dispatch) => {
 
 export const updateProfileUser = ({userData, avatar, auth}) => async (dispatch) => {
 
-    const {fullname, mobile, address , website, story, gender } = userData
-    if(!fullname)
+    //const {fullname, mobile, address , website, story, gender } = userData;
+    console.log(userData);
+    if(!userData.fullname)
     return dispatch({type: GLOBALTYPES.ALERT, payload: {error: "Please add your full name."}})
 
-    if(fullname.length > 25)
+    if(!userData.fullname && userData.fullname.length > 25)
     return dispatch({type: GLOBALTYPES.ALERT, payload: {error: "Your full name too long."}})
 
-    if(story.length > 200)
+    if(userData.story.length > 200)
     return dispatch({type: GLOBALTYPES.ALERT, payload: {error: "Your story too long."}})
 
     try {
@@ -78,7 +78,7 @@ export const updateProfileUser = ({userData, avatar, auth}) => async (dispatch) 
                     avatar: avatar ? media[0].url : auth.user.avatar,
                 }
             }
-        })
+        })  
 
         dispatch({type: GLOBALTYPES.ALERT, payload: {success: res.data.msg}})
     } catch (err) {

@@ -6,6 +6,7 @@ import {GLOBALTYPES } from '../../redux/actions/globalTypes'
 import {updateProfileUser} from './../../redux/actions/profileAction'
 
 const EditProfile = ({ setOnEdit }) => {
+
     const initState = {
         fullname: '',
         mobile: '',
@@ -45,7 +46,8 @@ const EditProfile = ({ setOnEdit }) => {
 
     const handleSubmit = e => {
         e.preventDefault()
-        dispatch(updateProfileUser(userData,avatar, auth))
+        //console.log(userData);
+        dispatch(updateProfileUser({userData, avatar, auth}))
         setOnEdit(false)
     }
 

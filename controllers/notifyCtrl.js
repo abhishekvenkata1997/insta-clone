@@ -21,7 +21,7 @@ const notifyCtrl = {
             const notify = await Notifies.findOneAndDelete({
                 id: req.params.id, url: req.query.url
             })
-
+            
             return res.json({notify})
         } catch (err) {
             return res.status(500).json({msg: err.message})
@@ -31,7 +31,7 @@ const notifyCtrl = {
         try {
             const notifies = await Notifies.find({recipients: req.user._id})
             .sort('-createdAt').populate('user', 'avatar username')
-
+            
             return res.json({notifies})
         } catch (err) {
             return res.status(500).json({msg: err.message})
@@ -51,7 +51,7 @@ const notifyCtrl = {
     deleteAllNotifies: async (req, res) => {
         try {
             const notifies = await Notifies.deleteMany({recipients: req.user._id})
-
+            
             return res.json({notifies})
         } catch (err) {
             return res.status(500).json({msg: err.message})
